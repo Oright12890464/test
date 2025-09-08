@@ -22,7 +22,6 @@
       border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       box-sizing: border-box;
-      position: relative; /* 使彈窗相對於容器定位 */
     }
     h2 {
       text-align: center;
@@ -85,6 +84,9 @@
     button:hover {
       background-color: #3a9d3a;
     }
+    #prepCalculator .buttons button {
+      width: 100%;
+    }
     .result {
       margin-top: 20px;
       background: #e8f5e9;
@@ -124,6 +126,11 @@
       margin-top: 0;
       vertical-align: middle;
     }
+    .x2-container input[type="checkbox"],
+    .manual-checkbox input[type="checkbox"] {
+      transform: scale(1.3);
+      margin-top: 4px;
+    }
     @media (max-width: 480px) {
       button {
         width: 48%;
@@ -137,8 +144,7 @@
     }
 
     /* 以下是新增彈窗樣式 */
-    #coreWeightModal,
-    #logicModal {
+    #coreWeightModal {
       display: none; 
       position: fixed;
       z-index: 9999;
@@ -146,114 +152,41 @@
       background-color: rgba(0,0,0,0.4);
       overflow: auto;
     }
-    #coreWeightModalContent,
-    #logicModalContent {
+    #coreWeightModalContent {
       background-color: white;
       margin: 8% auto;
       padding: 20px;
       border-radius: 8px;
-      max-width: 600px;
+      max-width: 320px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
-    #coreWeightModalContent table,
-    #logicModalContent table {
+    #coreWeightModalContent table {
       width: 100%;
       border-collapse: collapse;
     }
-    #coreWeightModalContent th,
-    #coreWeightModalContent td,
-    #logicModalContent th,
-    #logicModalContent td {
+    #coreWeightModalContent th, #coreWeightModalContent td {
       border: 1px solid #ccc;
       padding: 8px;
       text-align: center;
       cursor: pointer;
       user-select: none;
     }
-    #coreWeightModalContent th,
-    #logicModalContent th {
+    #coreWeightModalContent th {
       background-color: #4CAF50;
       color: white;
     }
-    #coreWeightModalClose,
-    #logicModalClose {
+    #coreWeightModalClose {
       float: right;
       font-size: 18px;
       font-weight: bold;
       color: #999;
       cursor: pointer;
     }
-    #coreWeightModalClose:hover,
-    #logicModalClose:hover {
+    #coreWeightModalClose:hover {
       color: #444;
     }
-    #coreWeightModalContent td:hover,
-    #logicModalContent td:hover {
+    #coreWeightModalContent td:hover {
       background-color: #e0f2e9;
-    }
-
-    /* 新增邏輯內容樣式 */
-    .logic-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    .logic-table th, .logic-table td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: left;
-    }
-    .logic-table th {
-      background-color: #4CAF50;
-      color: white;
-    }
-    .logic-table tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    #calculator {
-      margin-top: 20px; /* 增加上邊距 */
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      display: flex;
-      flex-direction: column; /* 垂直排列 */
-    }
-
-    #calcDisplay {
-      width: calc(100%); 
-      height: 40px;
-      text-align: right;
-      font-size: 24px; /* 增加字體大小 */
-      padding: 5px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px; /* 增加底部間距 */
-      box-sizing: border-box; /* 包括內邊距和邊框在內的寬度計算 */
-    }
-
-    .calc-btn-container {
-      display: grid; /* 使用網格布局 */
-      grid-template-columns: repeat(4, 1fr); /* 四列 */
-      gap: 5px; /* 按鈕之間的間距 */
-    }
-
-    .calc-btn {
-      font-size: 20px; /* 增加字體大小 */
-      padding: 15px; /* 增加內邊距 */
-      text-align: center; /* 置中顯示 */
-      cursor: pointer;
-      border: 1px solid #4CAF50;
-      background-color: white;
-      color: #4CAF50;
-      border-radius: 5px;
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    .calc-btn:hover {
-      background-color: #4CAF50;
-      color: white;
     }
   </style>
 </head>
@@ -261,59 +194,55 @@
 
 <div class="container">
     <div class="tab-buttons">
-        <button onclick="showTab('returnCalculator')" class="active">退料</button>
-        <button onclick="showTab('prepCalculator')">數量</button>
-        <button id="openLogicBtn" onclick="openLogicModal()" style="margin-left: 10px;">邏輯表</button>
+        <button onclick="showTab('returnCalculator')" class="active">退料換算</button>
+        <button onclick="showTab('prepCalculator')">數量換算</button>
     </div>
 
     <!-- 退料換算 -->
     <div id="returnCalculator">
-        <h2>退料</h2>
+        <h2>退料換算</h2>
         <label>原始重量：
             <input type="number" id="totalWeight" step="any" min="0" placeholder="請輸入原始重量" oninput="calculateRightAuto()">
-            <button type="button" onclick="focusOnInput('totalWeight')" style="margin-left: 10px;">123</button>
         </label>
-        <label style="display: block; margin-top: 1rem; font-weight: 600; color: #444;">
-          軸心重量：
-        </label>
-        <input
-          type="number"
-          id="coreWeight"
-          step="any"
-          min="0"
-          placeholder="請輸入軸心重量"
-          oninput="calculateRightAuto()"
-          style="width: 100%; max-width: 200px; margin-top: 4px;"
-        >
-        <button type="button" onclick="focusOnInput('coreWeight')" style="margin-left: 10px;">123</button>
+<label style="display: block; margin-top: 1rem; font-weight: 600; color: #444;">
+  軸心重量：
+</label>
+<input
+  type="number"
+  id="coreWeight"
+  step="any"
+  min="0"
+  placeholder="請輸入軸心重量"
+  oninput="calculateRightAuto()"
+  style="width: 100%; max-width: 200px; margin-top: 4px;"
+/>
+<button
+  type="button"
+  id="openCoreWeightBtn"
+  onclick="openCoreInfo()"
+  style="
+    margin-top: 8px;
+    font-weight: 600;
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    border-radius: 4px;
+    background: white;
+    padding: 6px 10px !important;   /* 縮小左右內距 */
+    cursor: pointer;
+    min-width: 0 !important;        /* 取消最小寬度 */
+    width: auto;                    /* 讓寬度自適應文字 */
+  "
+>
+  軸心表
+</button>
 
-        <button
-          type="button"
-          id="openCoreWeightBtn"
-          onclick="openCoreWeightModal()"
-          style="
-            margin-top: 8px;
-            font-weight: 600;
-            color: #4CAF50;
-            border: 1px solid #4CAF50;
-            border-radius: 4px;
-            background: white;
-            padding: 6px 10px !important;   /* 縮小左右內距 */
-            cursor: pointer;
-            min-width: 0 !important;        /* 取消最小寬度 */
-            width: auto;                    /* 讓寬度自適應文字 */
-          "
-        >
-          軸心表
-        </button>
+
 
         <label>原始捲數：
             <input type="number" id="originalRolls" min="0" placeholder="請輸入原始單捲數量" oninput="calculateRightAuto()">
-            <button type="button" onclick="focusOnInput('originalRolls')" style="margin-left: 10px;">123</button>
         </label>
         <label>退料重量：
             <input type="number" id="returnWeight" step="any" min="0" placeholder="請輸入實際退料重量" oninput="calculateRightAuto()">
-            <button type="button" onclick="focusOnInput('returnWeight')" style="margin-left: 10px;">123</button>
         </label>
         <label>換算貼紙張數：
             <input type="number" id="calculatedResult" class="readonly" readonly>
@@ -324,19 +253,16 @@
                 <label class="checkbox-option"><input type="checkbox" id="x2Toggle"> ｘ2</label>
                 <label class="checkbox-option"><input type="checkbox" id="x12Toggle"> ｘ12　（特殊種類使用）</label>
             </span>
-            <button type="button" onclick="focusOnInput('prepared1')" style="margin-left: 10px;">123</button>
         </label>
 
         <label>貼紙備料數（跨批號）：
             <input type="number" id="prepared2" min="0" placeholder="請輸入跨批號備料數量" oninput="updatePreparedTotal()">
-            <button type="button" onclick="focusOnInput('prepared2')" style="margin-left: 10px;">123</button>
         </label>
         <label>貼紙備料總數：
             <input type="number" id="preparedTotal" class="readonly" readonly>
         </label>
         <label>工單製令數：
             <input type="number" id="workOrder" min="0" placeholder="請輸入工單製令數">
-            <button type="button" onclick="focusOnInput('workOrder')" style="margin-left: 10px;">123</button>
         </label>
         
         <label>實際退料數：
@@ -348,7 +274,6 @@
 
         <label>藍單退料數：
             <input type="number" id="blueReturn" min="0" placeholder="請輸入藍單料數">
-            <button type="button" onclick="focusOnInput('blueReturn')" style="margin-left: 10px;">123</button>
         </label>
 
         <div class="button-group">
@@ -359,546 +284,430 @@
         <div class="result" id="leftResult" style="display:none;"></div>
     </div>
 
-    <!-- 數量換算 -->
-    <div id="prepCalculator" style="display:none;">
-        <h2>收貨/備料/回算多功能轉換</h2>
-        <label for="total">數量：</label>
-        <input type="number" id="total" min="1" placeholder="請輸入總數量" />
-        <button type="button" onclick="focusOnInput('total')" style="margin-left: 10px;">123</button>
+<!-- 數量換算 -->
+<div id="prepCalculator" style="display:none;">
+    <h2>收貨/備料/回算多功能轉換</h2>
+    <label for="total">數量：</label>
+    <input type="number" id="total" min="1" placeholder="請輸入總數量" />
 
-        <label for="prep">備料數量：</label>
-        <input type="number" id="prep" min="0" placeholder="請輸入備料數量" />
-        <button type="button" onclick="focusOnInput('prep')" style="margin-left: 10px;">123</button>
+    <label for="prep">備料數量：</label>
+    <input type="number" id="prep" min="0" placeholder="請輸入備料數量" />
 
-        <label for="unit">單位：</label>
-        <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateBoxCountResult()"/>
-        <button type="button" onclick="focusOnInput('unit')" style="margin-left: 10px;">123</button>
+    <label for="unit">單位：</label>
+    <input type="number" id="unit" min="1" placeholder="請輸入每箱單位" oninput="updateBoxCountResult()"/>
 
-        <label for="perPallet">板數：</label>
-        <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateBoxCountResult()"/>
-        <button type="button" onclick="focusOnInput('perPallet')" style="margin-left: 10px;">123</button>
+    <label for="perPallet">板數：</label>
+    <input type="number" id="perPallet" min="1" placeholder="請輸入每板單位" oninput="updateBoxCountResult()"/>
+
+    <div class="buttons">
+        <label for="boxCount">板箱數：</label>
+        <input type="number" id="boxCount" min="1" placeholder="請輸入每板箱數" oninput="updateBoxCountResult()">
+        
+        <!-- 滿板數量顯示區域，初始隱藏 -->
+        <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444; display: none;">
+            滿板數量：<span id="boxCountResult">0</span>
+        </div>
 
         <div class="buttons">
-            <label for="boxCount">板箱數：</label>
-            <input type="number" id="boxCount" min="1" placeholder="請輸入每板箱數" oninput="updateBoxCountResult()">
-            <button type="button" onclick="focusOnInput('boxCount')" style="margin-left: 10px;">123</button>
-            
-            <!-- 滿板數量顯示區域，初始隱藏 -->
-            <div id="boxCountDisplay" style="margin-top: 0.5rem; color: #444; display: none;">
-                滿板數量：<span id="boxCountResult">0</span>
-            </div>
-
-            <div class="buttons">
-                <button id="clear" onclick="clearFields()" style="width: 100%;">清除</button>
-                <div id="result" class="result" style="display:none;"></div>
-            </div>
+            <button id="clear" onclick="clearFields()">清除</button>
+            <div id="result" class="result" style="display:none;"></div>
         </div>
     </div>
+</div>
 
-    <!-- 計算機按鈕 -->
-    <div id="calculator">
-        <input type="text" id="calcDisplay" readonly />
-        <div class="calc-btn-container">
-            <div class="calc-btn">7</div>
-            <div class="calc-btn">8</div>
-            <div class="calc-btn">9</div>
-            <div class="calc-btn">/</div>
-            <div class="calc-btn">4</div>
-            <div class="calc-btn">5</div>
-            <div class="calc-btn">6</div>
-            <div class="calc-btn">*</div>
-            <div class="calc-btn">1</div>
-            <div class="calc-btn">2</div>
-            <div class="calc-btn">3</div>
-            <div class="calc-btn">-</div>
-            <div class="calc-btn">C</div>
-            <div class="calc-btn">0</div>
-            <div class="calc-btn">=</div>
-            <div class="calc-btn">+</div>
-        </div>
-    </div>
 
-    <!-- 軸心重量參考表彈窗 -->
-    <div id="coreWeightModal" style="display:none; position:fixed; z-index:9999; left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.4); overflow:auto;">
-      <div id="coreWeightModalContent" style="background:#fff; margin:8% auto; padding:20px; border-radius:8px; max-width:600px; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
-        <span id="coreWeightModalClose" onclick="closeCoreWeightModal()" style="float:right; font-size:22px; font-weight:bold; cursor:pointer;">&times;</span>
-        <h3>軸心重量參考表</h3>
-        <table style="width:100%; border-collapse:collapse; margin-top:10px;">
-          <thead>
-            <tr style="background:#4CAF50; color:#fff;">
-              <th style="padding:8px; border:1px solid #ddd;">重量</th>
-              <th style="padding:8px; border:1px solid #ddd;">適用產品</th>
-            </tr>
-          </thead>
-          <tbody>     
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.015g</td>
-              <td style="padding:8px; border:1px solid #ddd;">PRO260ml瓶身貼</td>   
-            </tr>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.035g</td>
-              <td style="padding:8px; border:1px solid #ddd;">護髮油100ml/PRO260ml封口貼</td>
-            </tr>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.28g</td>
-              <td style="padding:8px; border:1px solid #ddd;">SERUM 1ml / ESSENCE 1ml / CONCENTRATE 1ml / HAIR OIL 1ml / 香檳玫瑰精油 1ml / 山茶花菁萃油 1ml / 紫玫瑰油 1ml / RECOFFEE 1ml</td>
-            </tr>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.30g</td>
-              <td style="padding:8px; border:1px solid #ddd;">RICH 5ml / LIGHT 5ml</td>
-            </tr>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.32g</td>
-              <td style="padding:8px; border:1px solid #ddd;">CLEANSER 2ml</td>
-            </tr>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.42g</td>
-              <td style="padding:8px; border:1px solid #ddd;">TESTER 10ml</td>
-            </tr>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.65g</td>
-              <td style="padding:8px; border:1px solid #ddd;">N/A</td>
-            </tr>
-            <tr>
-              <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.72g</td>
-              <td style="padding:8px; border:1px solid #ddd;">TREATMENT 70ml / BAMBOO 70ml / ROSE 70ml / TESTER 70ml</td>
-            </tr>
-          </tbody>
-        </table>
-        <p style="font-size:12px; color:#666; margin-top:10px;">點擊「單位」欄的數值可直接帶入軸心重量欄</p>
-      </div>
-    </div>
+<!-- 軸心重量參考表彈窗 -->
+<div id="coreWeightModal" style="display:none; position:fixed; z-index:9999; left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.4); overflow:auto;">
+  <div id="coreWeightModalContent" style="background:#fff; margin:8% auto; padding:20px; border-radius:8px; max-width:600px; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
+    <span id="coreWeightModalClose" onclick="closeCoreWeightModal()" style="float:right; font-size:22px; font-weight:bold; cursor:pointer;">&times;</span>
+    <h3>軸心重量參考表</h3>
+    <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+      <thead>
+        <tr style="background:#4CAF50; color:#fff;">
+          <th style="padding:8px; border:1px solid #ddd;">重量</th>
+          <th style="padding:8px; border:1px solid #ddd;">適用產品</th>
+        </tr>
+      </thead>
+      <tbody>     
+        <tr>
+          <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.015g</td>
+          <td style="padding:8px; border:1px solid #ddd;">PRO260ml瓶身貼</td>   
+        </tr>
+        <tr>
+          <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.035g</td>
+          <td style="padding:8px; border:1px solid #ddd;">護髮油100ml/PRO260ml封口貼</td>
+        </tr>
+        <tr>
 
-    <style>
-        .logic-table th {
-            background-color: #4CAF50;
-            color: white;
-            text-align: center; /* 標題置中 */
-        }
-        .logic-table td {
-            text-align: left; /* 內容靠左 */
-            vertical-align: top; /* 讓內容在單元格內部靠上 */
-        }
-        #logicModalContent {
-            text-align: left; /* 整個彈窗內容靠左 */
-        }
-    </style>
+          <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.28g</td>
+          <td style="padding:8px; border:1px solid #ddd;">SERUM 1ml / ESSENCE 1ml / CONCENTRATE 1ml / HAIR OIL 1ml / 香檳玫瑰精油 1ml / 山茶花菁萃油 1ml / 紫玫瑰油 1ml / RECOFFEE 1ml</td>
 
-    <!-- 退料邏輯彈窗 -->
-    <div id="logicModal" style="display:none; position:fixed; z-index:9999; left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.4); overflow:auto;">
-        <div id="logicModalContent" style="background:#fff; margin:8% auto; padding:20px; border-radius:8px; max-width:800px; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
-            <span id="logicModalClose" onclick="closeLogicModal()" style="float:right; font-size:22px; font-weight:bold; cursor:pointer;">&times;</span>
-            <h3>退料邏輯</h3>
-            <table class="logic-table">
-                <thead>
-                    <tr>
-                        <th>貼紙退料單算法流程</th>
-                        <th>藍單寫退料數</th>
-                        <th>藍單沒寫退料數</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>第一種<br>實際退料數量大於應退料數</td>
-                        <td>
-                            藍單良品:YES(實際退料數-應退料數)<br>
-                            藍單不良品:YES(藍單退料數-藍單良品)
-                        </td>
-                        <td>
-                            
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>第二種<br>實際退料數量小於應退料數</td>
-                        <td>
-                            領料單:YES(應退料數-退料數)<br>
-                            藍單不良:YES(藍單退料數+領料單數)
-                        </td>
-                        <td>
-                            領料單:YES(應退料數-退料數)<br>
-                            藍單不良:YES(同領料單數)
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <h3>上方如沒顯示即不需填寫資料，領料單如無顯示則需填入0<h3>
-            <hr>
+        </tr>
+        <tr>
+          <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.30g</td>
+          <td style="padding:8px; border:1px solid #ddd;">RICH 5ml / LIGHT 5ml</td>
+        </tr>
+        <tr>
 
-            <h3>貼紙換算步驟</h3>
-            <p>
-              1. 原始總重 - 軸心重 = X<br>
-              2. 原始捲數 / X = Y<br>
-              3. 退料重量 - 軸心重 = Z<br>
-              4. Z * Y = 實際張數
-            </p>
-            <hr>
-              
-            <h3>重點須知</h3>
-            <p>
-              1.藍單不良品數：藍單退料數 + 領料數 (實際退料數大於應退料數的差值)
-            </p>
-        </div>
-    </div>
+          <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.32g</td>
+          <td style="padding:8px; border:1px solid #ddd;">CLEANSER 2ml</td>
+        </tr>
+        <tr>
 
-    <script>
-        document.getElementById('openCoreWeightBtn').addEventListener('click', () => {
-            document.getElementById('coreWeightModal').style.display = 'block';
+          <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.42g</td>
+          <td style="padding:8px; border:1px solid #ddd;">TESTER 10ml</td>
+        </tr>
+        <tr>
+
+          <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.65g</td>
+          <td style="padding:8px; border:1px solid #ddd;">N/A</td>
+        </tr>
+        <tr>
+
+          <td style="padding:8px; border:1px solid #ddd; cursor:pointer; color:#2E7D32; font-weight:600;">0.72g</td>
+          <td style="padding:8px; border:1px solid #ddd;">TREATMENT 70ml / BAMBOO 70ml / ROSE 70ml / TESTER 70ml</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px; color:#666; margin-top:10px;">點擊「單位」欄的數值可直接帶入軸心重量欄</p>
+  </div>
+</div>
+
+<script>
+  document.getElementById('openCoreWeightBtn').addEventListener('click', () => {
+    document.getElementById('coreWeightModal').style.display = 'block';
+  });
+
+  function closeCoreWeightModal() {
+    document.getElementById('coreWeightModal').style.display = 'none';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('coreWeightModal');
+modal.querySelectorAll('tbody td:nth-child(1)').forEach(td => {
+  td.addEventListener('click', () => {
+    let val = td.textContent.trim();
+    val = val.replace('g',''); // 去掉 g
+    const numVal = parseFloat(val) || '';
+    document.getElementById('coreWeight').value = numVal;
+    closeCoreWeightModal();
+    if(typeof calculateRightAuto === 'function') calculateRightAuto();
+  });
+});
+
+  });
+</script>
+
+<script>
+    // === 你原本的所有 JS 邏輯，不變，以下直接複製你給的內容 ===
+
+    // 切換標籤顯示
+    function showTab(tabId) {
+        const tabs = ['prepCalculator', 'returnCalculator'];
+        tabs.forEach(id => {
+            document.getElementById(id).style.display = (id === tabId) ? 'block' : 'none';
         });
 
-        function closeCoreWeightModal() {
-            document.getElementById('coreWeightModal').style.display = 'none';
-        }
-
-        document.getElementById('openLogicBtn').addEventListener('click', () => {
-            document.getElementById('logicModal').style.display = 'block';
+        const tabName = tabId === 'prepCalculator' ? '數量換算' : '退料換算';
+        document.querySelectorAll('.tab-buttons button').forEach(btn => {
+            btn.classList.toggle('active', btn.textContent.includes(tabName));
         });
+    }
 
-        function closeLogicModal() {
-            document.getElementById('logicModal').style.display = 'none';
-        }
+    // 初始顯示介面
+    showTab('returnCalculator');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const modal = document.getElementById('coreWeightModal');
-            modal.querySelectorAll('tbody td:nth-child(1)').forEach(td => {
-                td.addEventListener('click', () => {
-                    let val = td.textContent.trim();
-                    val = val.replace('g',''); // 去掉 g
-                    const numVal = parseFloat(val) || '';
-                    document.getElementById('coreWeight').value = numVal;
-                    closeCoreWeightModal();
-                    if(typeof calculateRightAuto === 'function') calculateRightAuto();
-                });
-            });
-        });
+    // 數量換算邏輯
+    const totalInput = document.getElementById('total');
+    const prepInput = document.getElementById('prep');
+    const unitInput = document.getElementById('unit');
+    const perPalletInput = document.getElementById('perPallet');
+    const resultDiv = document.getElementById('result');
 
-        function focusOnInput(inputId) {
-            const input = document.getElementById(inputId);
-            input.focus(); // 將焦點設置到輸入框
-        }
+    totalInput.addEventListener('input', updateResult);
+    prepInput.addEventListener('input', updateResult);
+    unitInput.addEventListener('input', updateResult);
+    perPalletInput.addEventListener('input', updateResult);
 
-        // 切換標籤顯示
-        function showTab(tabId) {
-            const tabs = ['prepCalculator', 'returnCalculator'];
-            tabs.forEach(id => {
-                document.getElementById(id).style.display = (id === tabId) ? 'block' : 'none';
-            });
+    function clearFields() {
+        totalInput.value = '';
+        prepInput.value = '';
+        unitInput.value = '';
+        perPalletInput.value = '';
+        const boxCountInput = document.getElementById('boxCount');
+        boxCountInput.value = '';
+        document.getElementById('boxCountResult').textContent = '0';
+        document.getElementById('boxCountDisplay').style.display = 'none';
 
-            const tabName = tabId === 'prepCalculator' ? '數量' : '退料';
-            document.querySelectorAll('.tab-buttons button').forEach(btn => {
-                btn.classList.toggle('active', btn.textContent.includes(tabName));
-            });
-        }
+        resultDiv.textContent = '';
+        resultDiv.style.display = 'none';
+    }
 
-        // 初始顯示介面
-        showTab('returnCalculator');
+    function updateBoxCountResult() {
+        const unit = parseInt(unitInput.value) || 0;
+        const boxCount = parseInt(document.getElementById('boxCount').value) || 0;
+        const result = unit * boxCount;
+        document.getElementById('boxCountResult').textContent = result;
 
-        // 數量換算邏輯
-        const totalInput = document.getElementById('total');
-        const prepInput = document.getElementById('prep');
-        const unitInput = document.getElementById('unit');
-        const perPalletInput = document.getElementById('perPallet');
-        const resultDiv = document.getElementById('result');
-
-        totalInput.addEventListener('input', updateResult);
-        prepInput.addEventListener('input', updateResult);
-        unitInput.addEventListener('input', updateResult);
-        perPalletInput.addEventListener('input', updateResult);
-
-        function clearFields() {
-            totalInput.value = '';
-            prepInput.value = '';
-            unitInput.value = '';
-            perPalletInput.value = '';
-            const boxCountInput = document.getElementById('boxCount');
-            boxCountInput.value = '';
-            document.getElementById('boxCountResult').textContent = '0';
+        if (unit > 0 && boxCount > 0) {
+            document.getElementById('boxCountDisplay').style.display = 'block';
+        } else {
             document.getElementById('boxCountDisplay').style.display = 'none';
-
-            resultDiv.textContent = '';
-            resultDiv.style.display = 'none';
         }
 
-        function updateBoxCountResult() {
-            const unit = parseInt(unitInput.value) || 0;
-            const boxCount = parseInt(document.getElementById('boxCount').value) || 0;
-            const result = unit * boxCount;
-            document.getElementById('boxCountResult').textContent = result;
+        updateResult();
+    }
 
-            if (unit > 0 && boxCount > 0) {
-                document.getElementById('boxCountDisplay').style.display = 'block';
+    function updateResult() {
+        const total = parseInt(totalInput.value);
+        const prep = prepInput.value === '' ? null : parseInt(prepInput.value);
+        const unit = unitInput.value === '' ? null : parseInt(unitInput.value);
+        const perPallet = perPalletInput.value === '' ? null : parseInt(perPalletInput.value);
+
+        resultDiv.textContent = '';
+
+        if (isNaN(total) || total <= 0) {
+            resultDiv.textContent = '請輸入有效的數量（總數），且必須大於0';
+            return;
+        }
+
+        if (prep !== null && prep > total) {
+            resultDiv.textContent = '備料數量不能大於總數量';
+            return;
+        }
+
+        let result = '';
+        let remaining = 0;
+
+        if (prep === null && unit === null && perPallet === null) {
+            result = `庫存數量：${total}支`;
+        } 
+        else if (prep !== null && unit === null && perPallet === null) {
+            const stock = total - prep;
+            result = `庫存數量：${formatResult(0, 0, stock)}`;
+        } 
+        else if (unit !== null && prep === null && perPallet === null) {
+            const boxes = Math.floor(total / unit);
+            const units = total % unit;
+            result = `庫存數量：${formatResult(0, boxes, units)} (${total})`;
+        } 
+        else if (perPallet !== null && prep === null && unit === null) {
+            const pallets = Math.floor(total / perPallet);
+            const remain = total % perPallet;
+            result = `庫存數量：${formatResult(pallets, 0, remain)} (${total})`;
+        } 
+        else if (prep !== null && unit !== null && perPallet === null) {
+            const stock = total - prep;
+            const prepBoxes = Math.floor(prep / unit);
+            const prepUnits = prep % unit;
+            const stockBoxes = Math.floor(stock / unit);
+            const stockUnits = stock % unit;
+
+            if (prep > 0) {
+                result = `備料數量：${formatResult(0, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(0, stockBoxes, stockUnits)} (${stock})`;
             } else {
-                document.getElementById('boxCountDisplay').style.display = 'none';
+                result = `庫存數量：${formatResult(0, stockBoxes, stockUnits)} (${stock})`;
             }
+            remaining = stock;
+        } 
+        else if (prep !== null && perPallet !== null && unit === null) {
+            const stock = total - prep;
+            const prepPallets = Math.floor(prep / perPallet);
+            const prepRemain = prep % perPallet;
+            const stockPallets = Math.floor(stock / perPallet);
+            const stockRemain = stock % perPallet;
 
-            updateResult();
+            if (prep > 0) {
+                result = `備料數量：${formatResult(prepPallets, 0, prepRemain)} (${prep})<br>庫存數量：${formatResult(stockPallets, 0, stockRemain)} (${stock})`;
+            } else {
+                result = `庫存數量：${formatResult(stockPallets, 0, stockRemain)} (${stock})`;
+            }
+            remaining = stock;
+        } 
+        else if (unit !== null && perPallet !== null && prep === null) {
+            const pallets = Math.floor(total / perPallet);
+            const remain = total % perPallet;
+            const boxes = Math.floor(remain / unit);
+            const units = remain % unit;
+
+            result = `庫存數量：${formatResult(pallets, boxes, units)} (${total})`;
+        } 
+        else if (prep !== null && unit !== null && perPallet !== null) {
+            const stock = total - prep;
+            const prepPallets = Math.floor(prep / perPallet);
+            const prepRemain = prep % perPallet;
+            const prepBoxes = Math.floor(prepRemain / unit);
+            const prepUnits = prepRemain % unit;
+
+            const stockPallets = Math.floor(stock / perPallet);
+            const stockRemain = stock % perPallet;
+            const stockBoxes = Math.floor(stockRemain / unit);
+            const stockUnits = stockRemain % unit;
+
+            if (prep > 0) {
+                result = `備料數量：${formatResult(prepPallets, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} (${stock})`;
+            } else {
+                result = `庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} (${stock})`;
+            }
+            remaining = stock;
         }
 
-        function updateResult() {
-            const total = parseInt(totalInput.value);
-            const prep = prepInput.value === '' ? null : parseInt(prepInput.value);
-            const unit = unitInput.value === '' ? null : parseInt(unitInput.value);
-            const perPallet = perPalletInput.value === '' ? null : parseInt(perPalletInput.value);
+        resultDiv.innerHTML = result;
+        resultDiv.style.display = 'block';
+    }
 
-            resultDiv.textContent = '';
+    function formatResult(pallets, boxes, units) {
+        let result = '';
+        if (pallets > 0) result += `${pallets}板 `;
+        if (boxes > 0) result += `${boxes}箱 `;
+        if (units > 0) result += `${units}支`;
+        return result.trim();
+    }
 
-            if (isNaN(total) || total <= 0) {
-                resultDiv.textContent = '請輸入有效的數量（總數），且必須大於0';
-                return;
-            }
+    function updatePreparedTotal() {
+        const p1 = parseInt(document.getElementById('prepared1').value) || 0;
+        const p2 = parseInt(document.getElementById('prepared2').value) || 0;
+        document.getElementById('preparedTotal').value = p1 + p2;
+    }
 
-            if (prep !== null && prep > total) {
-                resultDiv.textContent = '備料數量不能大於總數量';
-                return;
-            }
 
-            let result = '';
-            let remaining = 0;
+    // 退料計算邏輯
+    function calculateRightAuto() {
+        const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
+        const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
+        const originalRolls = parseInt(document.getElementById('originalRolls').value) || 0;
+        const returnWeight = parseFloat(document.getElementById('returnWeight').value) || 0;
+        const manualMode = document.getElementById('manualToggle').checked;
 
-            if (prep === null && unit === null && perPallet === null) {
-                result = `庫存數量：${total}支`;
-            } 
-            else if (prep !== null && unit === null && perPallet === null) {
-                const stock = total - prep;
-                result = `庫存數量：${formatResult(0, 0, stock)}`;
-            } 
-            else if (unit !== null && prep === null && perPallet === null) {
-                const boxes = Math.floor(total / unit);
-                const units = total % unit;
-                result = `庫存數量：${formatResult(0, boxes, units)} (${total})`;
-            } 
-            else if (perPallet !== null && prep === null && unit === null) {
-                const pallets = Math.floor(total / perPallet);
-                const remain = total % perPallet;
-                result = `庫存數量：${formatResult(pallets, 0, remain)} (${total})`;
-            } 
-            else if (prep !== null && unit !== null && perPallet === null) {
-                const stock = total - prep;
-                const prepBoxes = Math.floor(prep / unit);
-                const prepUnits = prep % unit;
-                const stockBoxes = Math.floor(stock / unit);
-                const stockUnits = stock % unit;
-
-                if (prep > 0) {
-                    result = `備料數量：${formatResult(0, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(0, stockBoxes, stockUnits)} (${stock})`;
-                } else {
-                    result = `庫存數量：${formatResult(0, stockBoxes, stockUnits)} (${stock})`;
-                }
-                remaining = stock;
-            } 
-            else if (prep !== null && perPallet !== null && unit === null) {
-                const stock = total - prep;
-                const prepPallets = Math.floor(prep / perPallet);
-                const prepRemain = prep % perPallet;
-                const stockPallets = Math.floor(stock / perPallet);
-                const stockRemain = stock % perPallet;
-
-                if (prep > 0) {
-                    result = `備料數量：${formatResult(prepPallets, 0, prepRemain)} (${prep})<br>庫存數量：${formatResult(stockPallets, 0, stockRemain)} (${stock})`;
-                } else {
-                    result = `庫存數量：${formatResult(stockPallets, 0, stockRemain)} (${stock})`;
-                }
-                remaining = stock;
-            } 
-            else if (unit !== null && perPallet !== null && prep === null) {
-                const pallets = Math.floor(total / perPallet);
-                const remain = total % perPallet;
-                const boxes = Math.floor(remain / unit);
-                const units = remain % unit;
-
-                result = `庫存數量：${formatResult(pallets, boxes, units)} (${total})`;
-            } 
-            else if (prep !== null && unit !== null && perPallet !== null) {
-                const stock = total - prep;
-                const prepPallets = Math.floor(prep / perPallet);
-                const prepRemain = prep % perPallet;
-                const prepBoxes = Math.floor(prepRemain / unit);
-                const prepUnits = prepRemain % unit;
-
-                const stockPallets = Math.floor(stock / perPallet);
-                const stockRemain = stock % perPallet;
-                const stockBoxes = Math.floor(stockRemain / unit);
-                const stockUnits = stockRemain % unit;
-
-                if (prep > 0) {
-                    result = `備料數量：${formatResult(prepPallets, prepBoxes, prepUnits)} (${prep})<br>庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} (${stock})`;
-                } else {
-                    result = `庫存數量：${formatResult(stockPallets, stockBoxes, stockUnits)} (${stock})`;
-                }
-                remaining = stock;
-            }
-
-            resultDiv.innerHTML = result;
-            resultDiv.style.display = 'block';
-        }
-
-        function formatResult(pallets, boxes, units) {
-            let result = '';
-            if (pallets > 0) result += `${pallets}板 `;
-            if (boxes > 0) result += `${boxes}箱 `;
-            if (units > 0) result += `${units}支`;
-            return result.trim();
-        }
-
-        function updatePreparedTotal() {
-            const p1 = parseInt(document.getElementById('prepared1').value) || 0;
-            const p2 = parseInt(document.getElementById('prepared2').value) || 0;
-            document.getElementById('preparedTotal').value = p1 + p2;
-        }
-
-                // 退料計算邏輯
-        function calculateRightAuto() {
-            const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
-            const coreWeight = parseFloat(document.getElementById('coreWeight').value) || 0;
-            const originalRolls = parseInt(document.getElementById('originalRolls').value) || 0;
-            const returnWeight = parseFloat(document.getElementById('returnWeight').value) || 0;
-            const manualMode = document.getElementById('manualToggle').checked;
-
-            if (totalWeight <= coreWeight || originalRolls <= 0 || returnWeight < coreWeight) {
-                document.getElementById('calculatedResult').value = '';
-                if (!manualMode) {
-                    document.getElementById('actualReturn').value = '';
-                }
-                return;
-            }
-
-            const val1 = totalWeight - coreWeight;
-            const val2 = originalRolls / val1;
-            const rawResult = (returnWeight - coreWeight) * val2;
-            const fractional = rawResult % 1;
-            const finalResult = fractional > 0 ? Math.ceil(rawResult) : rawResult;
-
-            document.getElementById('calculatedResult').value = finalResult;
+        if (totalWeight <= coreWeight || originalRolls <= 0 || returnWeight < coreWeight) {
+            document.getElementById('calculatedResult').value = '';
             if (!manualMode) {
-                document.getElementById('actualReturn').value = finalResult;
+                document.getElementById('actualReturn').value = '';
             }
+            return;
         }
 
-        function toggleManualInput() {
-            const checkbox = document.getElementById('manualToggle');
-            const actualInput = document.getElementById('actualReturn');
+        const val1 = totalWeight - coreWeight;
+        const val2 = originalRolls / val1;
+        const rawResult = (returnWeight - coreWeight) * val2;
+        const fractional = rawResult % 1;
+        const finalResult = fractional > 0 ? Math.ceil(rawResult) : rawResult;
 
-            if (checkbox.checked) {
-                actualInput.removeAttribute('readonly');
-                actualInput.classList.remove('readonly');
+        document.getElementById('calculatedResult').value = finalResult;
+        if (!manualMode) {
+            document.getElementById('actualReturn').value = finalResult;
+        }
+    }
+
+    function toggleManualInput() {
+        const checkbox = document.getElementById('manualToggle');
+        const actualInput = document.getElementById('actualReturn');
+
+        if (checkbox.checked) {
+            actualInput.removeAttribute('readonly');
+            actualInput.classList.remove('readonly');
+        } else {
+            actualInput.setAttribute('readonly', true);
+            actualInput.classList.add('readonly');
+            calculateRightAuto();
+        }
+    }
+
+    function calculateLeft() {
+        const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
+        const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
+        const manualMode = document.getElementById('manualToggle').checked;
+        let actualReturn = parseInt(document.getElementById('actualReturn').value) || 0;
+        const blueReturnInput = parseInt(document.getElementById('blueReturn').value) || 0;
+        const x2Checked = document.getElementById('x2Toggle').checked;
+        const x12Checked = document.getElementById('x12Toggle').checked;
+
+        const blueReturn = x2Checked ? blueReturnInput * 2 : blueReturnInput;
+
+        const blueReturnX12 = x12Checked ? blueReturnInput * 12 : blueReturn;
+
+        const shouldReturn = prepared - workOrder;
+        let goodReturn = 0, badReturn = 0, requirePick = 0, giftReturn = 0;
+
+        if (actualReturn > shouldReturn) {
+            goodReturn = actualReturn - shouldReturn;
+            if (goodReturn > blueReturnX12) {
+                giftReturn = goodReturn - blueReturnX12;
+                goodReturn = blueReturnX12;
+                badReturn = 0;
             } else {
-                actualInput.setAttribute('readonly', true);
-                actualInput.classList.add('readonly');
-                calculateRightAuto();
+                badReturn = blueReturnX12 - goodReturn;
             }
+        } else if (actualReturn < shouldReturn) {
+            requirePick = shouldReturn - actualReturn;
+            badReturn = blueReturnX12 + requirePick;
+        } else {
+            badReturn = blueReturnX12;
         }
 
-        function calculateLeft() {
-            const prepared = parseInt(document.getElementById('preparedTotal').value) || 0;
-            const workOrder = parseInt(document.getElementById('workOrder').value) || 0;
-            const manualMode = document.getElementById('manualToggle').checked;
-            let actualReturn = parseInt(document.getElementById('actualReturn').value) || 0;
-            const blueReturnInput = parseInt(document.getElementById('blueReturn').value) || 0;
-            const x2Checked = document.getElementById('x2Toggle').checked;
-            const x12Checked = document.getElementById('x12Toggle').checked;
+        requirePick = Math.max(requirePick, 0);
+        goodReturn = Math.max(goodReturn, 0);
+        badReturn = Math.max(badReturn, 0);
+        giftReturn = Math.max(giftReturn, 0);
 
-            const blueReturn = x2Checked ? blueReturnInput * 2 : blueReturnInput;
+        const outputLines = [
+            `領料單: ${requirePick}`,
+            `藍單良品: ${goodReturn}`,
+            `藍單不良品: ${badReturn}`
+        ];
 
-            const blueReturnX12 = x12Checked ? blueReturnInput * 12 : blueReturn;
-
-            const shouldReturn = prepared - workOrder;
-            let goodReturn = 0, badReturn = 0, requirePick = 0, giftReturn = 0;
-
-            if (actualReturn > shouldReturn) {
-                goodReturn = actualReturn - shouldReturn;
-                if (goodReturn > blueReturnX12) {
-                    giftReturn = goodReturn - blueReturnX12;
-                    goodReturn = blueReturnX12;
-                    badReturn = 0;
-                } else {
-                    badReturn = blueReturnX12 - goodReturn;
-                }
-            } else if (actualReturn < shouldReturn) {
-                requirePick = shouldReturn - actualReturn;
-                badReturn = blueReturnX12 + requirePick;
-            } else {
-                badReturn = blueReturnX12;
-            }
-
-            requirePick = Math.max(requirePick, 0);
-            goodReturn = Math.max(goodReturn, 0);
-            badReturn = Math.max(badReturn, 0);
-            giftReturn = Math.max(giftReturn, 0);
-
-            const outputLines = [
-                `領料單: ${requirePick}`,
-                `藍單良品: ${goodReturn}`,
-                `藍單不良品: ${badReturn}`
-            ];
-
-            if (giftReturn > 0) {
-                outputLines.push(`贈品: ${giftReturn}    如果多太多就入進去`);
-            }
-
-            const leftResultDiv = document.getElementById('leftResult');
-            leftResultDiv.textContent = outputLines.join('\n');
-            leftResultDiv.style.display = 'block';
+        if (giftReturn > 0) {
+            outputLines.push(`贈品: ${giftReturn}    如果多太多就入進去`);
         }
 
-        function clearAll() {
-            const inputs = document.querySelectorAll('input[type=number]');
-            inputs.forEach(input => {
-                input.value = '';
-            });
-            document.getElementById('manualToggle').checked = false;
-            document.getElementById('actualReturn').setAttribute('readonly', true);
-            document.getElementById('actualReturn').classList.add('readonly');
-            document.getElementById('x2Toggle').checked = false;
-            document.getElementById('x12Toggle').checked = false;
-            document.getElementById('leftResult').style.display = 'none';
-        }
+        const leftResultDiv = document.getElementById('leftResult');
+        leftResultDiv.textContent = outputLines.join('\n');
+        leftResultDiv.style.display = 'block';
+    }
 
-        // === 新增軸心重量參考表彈窗控制 ===
-        const modal = document.getElementById('coreWeightModal');
-        const modalContent = document.getElementById('coreWeightModalContent');
-
-        function openCoreWeightModal() {
-            modal.style.display = 'block';
-        }
-
-        function closeCoreWeightModal() {
-            modal.style.display = 'none';
-        }
-
-        // 點擊彈窗外區域也關閉
-        window.onclick = function(event) {
-            if (event.target === modal) {
-                closeCoreWeightModal();
-            }
-        };
-
-        // 點擊表格重量欄，帶入軸心重量輸入框
-        modalContent.querySelectorAll('tbody td:nth-child(1)').forEach(cell => {
-            cell.addEventListener('click', () => {
-                document.getElementById('coreWeight').value = cell.textContent;
-                calculateRightAuto();  // 選擇後自動重新計算
-                closeCoreWeightModal();
-            });
+    function clearAll() {
+        const inputs = document.querySelectorAll('input[type=number]');
+        inputs.forEach(input => {
+            input.value = '';
         });
+        document.getElementById('manualToggle').checked = false;
+        document.getElementById('actualReturn').setAttribute('readonly', true);
+        document.getElementById('actualReturn').classList.add('readonly');
+        document.getElementById('x2Toggle').checked = false;
+        document.getElementById('x12Toggle').checked = false;
+        document.getElementById('leftResult').style.display = 'none';
+    }
 
-        const calcDisplay = document.getElementById('calcDisplay');
-        const calcBtns = document.querySelectorAll('.calc-btn');
 
-        calcBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (btn.textContent === '=') {
-                    try {
-                        calcDisplay.value = eval(calcDisplay.value);
-                    } catch (error) {
-                        calcDisplay.value = '錯誤';
-                    }
-                } else if (btn.textContent === 'C') {
-                    calcDisplay.value = '';
-                } else {
-                    calcDisplay.value += btn.textContent;
-                }
-            });
-        });
-    </script>
+    // === 新增軸心重量參考表彈窗控制 ===
+    const modal = document.getElementById('coreWeightModal');
+    const modalContent = document.getElementById('coreWeightModalContent');
+
+    function openCoreWeightModal() {
+      modal.style.display = 'block';
+    }
+
+    function closeCoreWeightModal() {
+      modal.style.display = 'none';
+    }
+
+    // 點擊彈窗外區域也關閉
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        closeCoreWeightModal();
+      }
+    };
+
+    // 點擊表格重量欄，帶入軸心重量輸入框
+    modalContent.querySelectorAll('tbody td:nth-child(2)').forEach(cell => {
+      cell.addEventListener('click', () => {
+        document.getElementById('coreWeight').value = cell.textContent;
+        calculateRightAuto();  // 選擇後自動重新計算
+        closeCoreWeightModal();
+      });
+    });
+
+</script>
 
 </body>
 </html>
