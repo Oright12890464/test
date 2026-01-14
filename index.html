@@ -24,10 +24,19 @@ body {
   overflow: hidden;
 }
 
+/* 📱 手機框線效果 */
+.phone-frame {
+  padding: 20px;
+  border: 6px solid rgba(255,105,180,0.5); /* 粉色半透明 */
+  border-radius: 40px;
+  display: inline-block;
+  background-color: rgba(255,228,239,0.1); /* 淡背景 */
+}
+
+/* 內容區 */
 .container {
   width: 100%;
   max-width: 420px;
-  padding: 20px;
   text-align: center;
 }
 
@@ -75,9 +84,9 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-/* 👥 人數輸入 */
+/* 👥 人數輸入（稍微寬一些） */
 input.people {
-  width: 160px;
+  width: 180px; /* 比之前稍微寬一點 */
   margin: 0 auto 12px;
   display: block;
   font-size: 20px; 
@@ -88,9 +97,9 @@ input.people {
   font-weight: 700;
 }
 
-/* 🔘 按鈕上下排，寬度同人數框 */
+/* 🔘 按鈕上下排列，寬度同人數框 */
 button {
-  width: 160px;
+  width: 180px; /* 和人數框一致 */
   font-size: 18px; 
   padding: 12px; 
   margin: 8px auto;
@@ -121,30 +130,32 @@ button:active {
 
 <body>
 
-<div class="container">
-  <h2>🌸工時計算器🌸</h2>
+<div class="phone-frame">
+  <div class="container">
+    <h2>🌸工時計算器🌸</h2>
 
-  <label>開始時間</label>
-  <div class="time-row">
-    <input type="number" id="startH" min="0" max="23" placeholder="HH">
-    <span class="time-colon">:</span>
-    <input type="number" id="startM" min="0" max="59" placeholder="MM">
+    <label>開始時間</label>
+    <div class="time-row">
+      <input type="number" id="startH" min="0" max="23" placeholder="HH">
+      <span class="time-colon">:</span>
+      <input type="number" id="startM" min="0" max="59" placeholder="MM">
+    </div>
+
+    <label>結束時間</label>
+    <div class="time-row">
+      <input type="number" id="endH" min="0" max="23" placeholder="HH">
+      <span class="time-colon">:</span>
+      <input type="number" id="endM" min="0" max="59" placeholder="MM">
+    </div>
+
+    <label>人數</label>
+    <input type="number" id="people" class="people" min="1" value="1">
+
+    <button id="calculateBtn" onclick="calculate()">計算工時</button>
+    <button id="clearBtn" onclick="clearOutput()">清除工時</button>
+
+    <div class="result" id="output"></div>
   </div>
-
-  <label>結束時間</label>
-  <div class="time-row">
-    <input type="number" id="endH" min="0" max="23" placeholder="HH">
-    <span class="time-colon">:</span>
-    <input type="number" id="endM" min="0" max="59" placeholder="MM">
-  </div>
-
-  <label>人數</label>
-  <input type="number" id="people" class="people" min="1" value="1">
-
-  <button id="calculateBtn" onclick="calculate()">計算工時</button>
-  <button id="clearBtn" onclick="clearOutput()">清除工時</button>
-
-  <div class="result" id="output"></div>
 </div>
 
 <script>
