@@ -63,25 +63,27 @@ label {
   font-weight: 700;
 }
 
-/* 移除 number 預設箭頭（手機好看） */
+.time-colon {
+  font-size: 22px;
+  color: #ff1493;
+}
+
+/* 🔢 移除 number 上下箭頭 */
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.time-colon {
-  font-size: 22px;
-  color: #ff1493;
-}
-
-input[type="number"].full {
-  width: 100%; 
+/* 👥 人數輸入（不滿版，跟時間寬度一致） */
+input.people {
+  width: 160px;
+  margin: 0 auto 10px;
+  display: block;
   font-size: 20px; 
   padding: 12px; 
   border-radius: 12px; 
   border: 2px solid #ff69b4; 
-  margin-bottom: 10px;
   text-align: center;
   font-weight: 700;
 }
@@ -141,7 +143,7 @@ button:active {
   </div>
 
   <label>人數</label>
-  <input type="number" id="people" class="full" min="1" placeholder="請輸入人數">
+  <input type="number" id="people" class="people" min="1" placeholder="人數">
 
   <div class="button-row">
     <button id="calculateBtn" onclick="calculate()">計算工時</button>
