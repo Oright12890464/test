@@ -17,7 +17,7 @@ html, body {
 body { 
   font-family: 'Baloo 2', 'Comic Sans MS', Arial, sans-serif; 
   font-weight: 700;
-  background: #ffe4ef; /* 單一粉紅背景 */
+  background: #ffe4ef;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -76,7 +76,7 @@ input[type=number]::-webkit-outer-spin-button {
 
 /* 👥 人數輸入 */
 input.people {
-  width: 180px; /* 人數框寬度 */
+  width: 210px;
   margin: 0 auto 12px;
   display: block;
   font-size: 20px; 
@@ -87,9 +87,9 @@ input.people {
   font-weight: 700;
 }
 
-/* 🔘 按鈕上下排列，寬度與人數框相同 */
+/* 🔘 按鈕 */
 button {
-  width: 210px; /* 與人數框一致 */
+  width: 210px;
   font-size: 18px; 
   padding: 12px; 
   margin: 8px auto;
@@ -172,8 +172,11 @@ function calculate() {
   const workMin = Math.max(0, endMin - startMin - totalBreak);
   const totalWorkHour = (workMin / 60) * people;
 
+  // ✅ 不進位：小數第 4 位直接捨去，只保留 3 位
+  const displayHour = Math.floor(totalWorkHour * 1000) / 1000;
+
   document.getElementById('output').innerHTML =
-    `工時：${totalWorkHour.toFixed(3)}`;
+    `工時：${displayHour.toFixed(3)}`;
 }
 
 function clearOutput() {
